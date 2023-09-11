@@ -1,4 +1,4 @@
-from mido import Message, MidiTrack, MidiFile, MetaMessage
+from mido import Message, MidiTrack, MidiFile
 
 # スケールの間隔（半音数）を定義
 major_scale = [2, 2, 1, 2, 2, 2, 1]  # メジャースケール
@@ -131,12 +131,12 @@ for msg in track:
     if msg.type == 'set_tempo':
         tempo = msg.tempo
     if msg.type == 'note_on':
-        if note_on is not None:  # 前のnote_onがnote_offなしであれば
-            note_off_time = msg.time - prev_time  # 追加：note_offの時間を計算
+        if note_on is not None:
+            note_off_time = msg.time - prev_time
             note_off = Message('note_off', note=note_on.note, velocity=note_on.velocity, time=note_off_time)
             melody_pairs.append((note_on, note_off))
         note_on = msg
-        prev_time = msg.time  # 追加：前のメッセージの時間を更新
+        prev_time = msg.time
     elif msg.type == 'note_off':
         if note_on is not None and note_on.note == msg.note:
             melody_pairs.append((note_on, msg))
@@ -153,13 +153,13 @@ melody_events = []
 for note_on, note_off in melody_pairs:
     note = note_on.note
     velocity = note_on.velocity
-    time = note_on.time  # ここではnote_onの時間を使用しています。
+    time = note_on.time
     melody_events.append((note, velocity, time))
 
 scale_root = int(input("スケールのルート音を一覧から選んでください(MIDI番号)。 (C:60, C#: 61, D:61, D#: 63, E:64 F:65 F#:66 G:67 G#:68 A:69 A#:70 B:71 ): "))
 
 # 三度上のハモリ生成
-upper_harmony = generate_harmony(scale_root, chosen_scale, melody_pairs, 2, blue_note_mode)
+upper_harmony = generate_harmony(scale_root, chosen_scale, melody_pairs, 2, blue_note_mode) # 音楽の度数の数え方に注意
 
 # 三度下のハモリ生成
 lower_harmony = generate_harmony(scale_root, chosen_scale, melody_pairs, -2, blue_note_mode)
@@ -172,4 +172,3 @@ save_harmony(lower_harmony, 'lower_harmony_output.mid')
 
 print("Upper harmony: OK")
 print("Lower harmony: OK")
-#print("Upper harmony: ", upper_harmony)
